@@ -1,47 +1,102 @@
-E20 Fuel Phase Separation Predictor ⛽💧
+<div align="center">
 
-An Industrial IoT (IIoT) digital twin and machine learning dashboard built to forecast water ingress and prevent phase separation in E20 (20% ethanol) underground storage tanks.
+# ⛽💧 E20 Fuel Phase Separation Predictor
 
-📖 Project Background
+**An Industrial IoT digital twin and machine learning dashboard that forecasts water ingress and warns operators before phase separation happens in E20 underground storage tanks.**
 
-India is rapidly transitioning to E20 fuel (a blend of 20% ethanol and 80% petrol) to enhance energy security and reduce carbon emissions. However, this shift introduces a critical logistical and chemical engineering bottleneck: Phase Separation.
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![XGBoost](https://img.shields.io/badge/Model-XGBoost-orange)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-red)
+![Plotly](https://img.shields.io/badge/Charts-Plotly-3F4F75)
 
-Ethanol is highly hygroscopic (it absorbs water from the atmosphere). During logistical transport and underground storage at retail outlets (OMCs), fuel tanks undergo diurnal temperature swings (day/night heating and cooling). This causes the tanks to "breathe," drawing in humid atmospheric air. If the water content in an E20 blend exceeds a critical tolerance threshold (approximately 0.5% or 5,000 ppm), the ethanol-water mixture separates from the petrol and sinks to the bottom of the tank, rendering the fuel unusable and severely damaging vehicle engines.
+</div>
 
-Currently, OMC operators rely on manual tank dipping multiple times a day to check for water. This project automates and modernizes that process by predicting phase separation before it happens.
+---
 
-🎯 The Solution: Predictive Digital Twin
+## 📑 Table of Contents
 
-This repository contains a machine learning pipeline and an interactive Streamlit dashboard that acts as a "Digital Twin" for an underground storage tank.
+- [Background](#-background)
+- [The Solution](#-the-solution)
+- [Key Features](#-key-features)
+- [How It Works](#-how-it-works)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Using the Dashboard](#-using-the-dashboard)
+- [Alert Levels](#-alert-levels)
+- [Troubleshooting](#-troubleshooting)
+- [Future Scope](#-future-scope)
 
-By feeding real-time environmental telemetry (temperature swings, ambient humidity, and tank vapor space) into an XGBoost Regressor, the system accurately forecasts the hourly rate of moisture ingress. It provides operators with a 72-hour predictive curve, triggering automated alerts if a tank is on trajectory to breach the 5,000 ppm safety limit.
+---
 
-✨ Key Features
+## 📖 Background
 
-Physics-Informed Synthetic Data: Simulates accurate thermodynamic tank behavior (diurnal breathing cycles and moisture accumulation).
+India is moving rapidly to **E20** fuel (20% ethanol, 80% petrol) to improve energy security and cut carbon emissions. This shift creates a serious logistics and chemical engineering problem: **phase separation**.
 
-IoT Sensor Simulation: Generates a continuous, rolling 14-day historical feed of tank telemetry.
+- Ethanol is **hygroscopic**: it absorbs water from the atmosphere.
+- Underground tanks at retail outlets (OMCs) go through **diurnal temperature swings**. The tank "breathes" and draws in humid air.
+- When water content in E20 passes a critical threshold (about **0.5%, or 5,000 ppm**), the ethanol-water mixture separates from the petrol and sinks to the bottom of the tank.
+- The result is unusable fuel and potential damage to vehicle engines.
 
-ML Forecasting Engine: Utilizes a trained XGBoost model to predict future daily/hourly water ingress velocities based on current environmental constraints.
+Today, operators check for water by **manual tank dipping** several times a day. This project automates that process by **predicting separation before it happens**.
 
-Interactive UI (Plotly & Streamlit): Seamlessly stitches 14 days of historical actuals with a high-resolution 3-day predictive forecast curve.
+---
 
-Automated Alerting Protocol: Dynamic UI indicators that shift from Safe (Green) to Warning (Yellow) to Imminent Phase Separation (Red).
+## 🎯 The Solution
 
-🛠️ Tech Stack
+This repository contains an ML pipeline and an interactive Streamlit dashboard that act as a **digital twin** of an underground storage tank.
 
-Core Language: Python 3.8+
+Real-time environmental telemetry (temperature swings, ambient humidity, tank vapor space) feeds an **XGBoost regressor**. The model forecasts the hourly rate of moisture ingress and produces a **72-hour predictive curve**. If the tank is on course to cross the 5,000 ppm limit, the dashboard raises an alert.
 
-Machine Learning: XGBoost, Scikit-Learn
+---
 
-Data Manipulation: Pandas, NumPy
+## ✨ Key Features
 
-Frontend / Dashboard: Streamlit
+| Feature | Description |
+|---|---|
+| **Physics-informed synthetic data** | Simulates thermodynamic tank behavior, including diurnal breathing cycles and moisture accumulation. |
+| **IoT sensor simulation** | Generates a continuous, rolling 14-day feed of tank telemetry. |
+| **ML forecasting engine** | A trained XGBoost model predicts hourly and daily water ingress velocity from current conditions. |
+| **Interactive UI** | Plotly and Streamlit stitch 14 days of historical actuals to a high-resolution 3-day forecast. |
+| **Automated alerting** | Indicators move from Safe (green) to Warning (yellow) to Imminent Phase Separation (red). |
+| **Live stream simulation** | Optional animated mode that adds a new reading every second. |
+| **Manual override** | Sliders for temperature, humidity and vapor space show the time to phase separation instantly. |
 
-Visualization: Plotly Express
+---
 
-📂 Project Architecture
+## ⚙️ How It Works
 
+```text
+generate_data.py ──► data/synthetic_tank_data.csv ──► train_model.py ──► models/xgb_model.json
+                                                                              │
+generate_sensor_log.py ──► data/sensor_log.csv ──────────────────────────────►│
+                                                                              ▼
+                                                                    app.py (Streamlit)
+                                                         history + 72-hour forecast + alerts
+```
+
+1. **Data generation:** `generate_data.py` builds a physics-informed training dataset.
+2. **Training:** `train_model.py` fits an XGBoost regressor and exports it to `models/xgb_model.json`.
+3. **Sensor simulation:** `generate_sensor_log.py` creates a rolling 14-day telemetry log.
+4. **Dashboard:** `app.py` loads the log and the model, forecasts 72 hours ahead, and shows alerts.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tools |
+|---|---|
+| Language | Python 3.8+ |
+| Machine learning | XGBoost, Scikit-Learn |
+| Data handling | Pandas, NumPy |
+| Dashboard | Streamlit |
+| Visualization | Plotly Express |
+
+---
+
+## 📂 Project Structure
+
+```text
 E20_Predictor/
 │
 ├── data/
@@ -52,88 +107,113 @@ E20_Predictor/
 │   └── xgb_model.json            # Trained XGBoost regressor weights
 │
 ├── app.py                        # Streamlit dashboard application
-├── generate_data.py              # Script to generate training data
-├── train_model.py                # Script to train & export the ML model
-├── generate_sensor_log.py        # Script to simulate live IoT telemetry
+├── generate_data.py              # Generates training data
+├── train_model.py                # Trains and exports the ML model
+├── generate_sensor_log.py        # Simulates live IoT telemetry
 ├── requirements.txt              # Python dependencies
 └── README.md                     # Project documentation
+```
 
+---
 
-🚀 How to Clone and Run Locally
+## 🚀 Getting Started
 
-Follow these exact steps to get the Digital Twin running on your local machine.
+### Prerequisites
 
-1. Clone the Repository
+- Python 3.8 or newer
+- `git` and `pip`
 
-Open your terminal or command prompt and run:
+### 1. Clone the repository
 
+```bash
 git clone https://github.com/YOUR_USERNAME/E20_Predictor.git
 cd E20_Predictor
+```
 
+### 2. Create a virtual environment (recommended)
 
-2. Set Up a Virtual Environment (Recommended)
+**Windows (PowerShell):**
 
-Isolate your project dependencies by creating a virtual environment:
-
-For Windows (PowerShell):
-
+```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
+```
 
+**macOS / Linux:**
 
-For macOS/Linux:
-
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
+### 3. Install dependencies
 
-3. Install Dependencies
-
-With your virtual environment active, install the required Python libraries:
-
+```bash
 pip install -r requirements.txt
+```
 
+### 4. Run the ML pipeline
 
-4. Execute the ML Pipeline
+The data must exist and the model must be trained before the UI will work. Run these **in order**:
 
-You must build the data and train the model before launching the UI. Run these scripts sequentially:
+```bash
+python generate_data.py          # 1. build training data
+python train_model.py            # 2. train and export the XGBoost model
+python generate_sensor_log.py    # 3. create the 14-day sensor feed
+```
 
-Generate the training data:
+### 5. Launch the dashboard
 
-python generate_data.py
-
-
-Train the XGBoost model:
-
-python train_model.py
-
-
-Generate the historical sensor feed:
-
-python generate_sensor_log.py
-
-
-5. Launch the Dashboard
-
-Start the Streamlit server:
-
+```bash
 streamlit run app.py
+```
 
+A browser tab opens automatically, usually at <http://localhost:8501>.
 
-A browser window will automatically open (usually at http://localhost:8501) displaying the live interactive dashboard.
+---
 
-🎮 How to Use the Dashboard
+## 🎮 Using the Dashboard
 
-Live Sensor Feed Mode: The dashboard will automatically read the sensor_log.csv file, display the 14-day history, and project a 3-day forecast.
+| Mode | What it does |
+|---|---|
+| **Live Sensor Feed** | Reads `sensor_log.csv`, shows the 14-day history and projects a 3-day forecast. |
+| **Simulate Real-Time Data Stream** | Tick the sidebar checkbox to simulate an active IoT connection. The chart animates with a new reading every second. |
+| **Manual Override** | Use the sidebar sliders (Temperature, Humidity, Vapor Space) to test extreme conditions and see the effect on Time-to-Phase-Separation. |
 
-Simulate Real-Time Data Stream: Check the box in the sidebar to simulate an active IoT connection. The chart will animate, generating new readings every second.
+---
 
-Manual Override: Select this mode from the sidebar to play with the sliders (Temperature, Humidity, Vapor Space) and instantly see how different environmental extremes affect the Time-to-Phase-Separation.
+## 🚦 Alert Levels
 
-🔮 Future Scope
+| Status | Color | Meaning |
+|---|---|---|
+| **Safe** | 🟢 Green | Water content is well below the 5,000 ppm limit. |
+| **Warning** | 🟡 Yellow | Forecast is trending toward the limit. Plan an inspection. |
+| **Imminent Phase Separation** | 🔴 Red | Forecast crosses 5,000 ppm. Act now. |
 
-Integration with real-world Raman Spectroscopy or Photothermal sensors via MQTT protocols.
+---
 
-Adjusting the 5,000 ppm limit dynamically based on localized fuel temperature drops.
+## 🧰 Troubleshooting
 
-Deploying the dashboard to a cloud provider (AWS EC2 / Streamlit Community Cloud) for remote OMC depot monitoring.
+| Problem | Fix |
+|---|---|
+| `FileNotFoundError` for a CSV or model file | Run the three pipeline scripts in order (step 4) from the project root. |
+| `ModuleNotFoundError` | Activate the virtual environment, then run `pip install -r requirements.txt`. |
+| PowerShell blocks `Activate.ps1` | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned`, then activate again. |
+| Port 8501 already in use | Run `streamlit run app.py --server.port 8502`. |
+| Stale or odd forecasts | Delete `data/` and `models/` contents and rerun the pipeline. |
+
+---
+
+## 🔮 Future Scope
+
+- [ ] Integrate real Raman spectroscopy or photothermal sensors over MQTT.
+- [ ] Adjust the 5,000 ppm limit dynamically based on local fuel temperature drops.
+- [ ] Deploy to AWS EC2 or Streamlit Community Cloud for remote depot monitoring.
+
+---
+
+<div align="center">
+
+Built to keep E20 fuel clean, dry and dependable. ⛽
+
+</div>
